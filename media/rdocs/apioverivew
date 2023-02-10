@@ -1,0 +1,19 @@
+﻿
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+	
+
+	{"message":"SucessFully Fetched The Data","status":true,"result":[{"key":1,"image":{"uri":"https://www.faircent.com/images/onboarding_new1.png"},"backgroundColor":"#ffffff"},{"key":2,"image":{"uri":"https://www.faircent.com/images/onboarding_new2.png"},"backgroundColor":"#ffffff"},{"key":3,"image":{"uri":"https://www.faircent.com/images/onboarding_new3.png"},"backgroundColor":"#ffffff"},{"key":4,"image":{"uri":"https://www.faircent.com/images/onboarding_new4.png"},"backgroundColor":"#ffffff"},{"key":5,"image":{"uri":"https://www.faircent.com/images/onboarding_new5.png"},"backgroundColor":"#ffffff"}],"count":0}
