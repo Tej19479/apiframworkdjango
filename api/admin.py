@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import  User,inv,bank_details
+from .models import  User,inv,bank_details,cnd,user_verification,user_details
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 # Register your models here.
 
@@ -30,8 +30,13 @@ class UserModelAdmin(BaseUserAdmin):
     search_fields = ('email','id')
     ordering = ('email', 'id')
     filter_horizontal = ()
+    
+
 
 # Now register the new UserAdmin...
 admin.site.register(User, UserModelAdmin)
 admin.site.register(inv)
 admin.site.register(bank_details)
+admin.site.register(cnd)
+admin.site.register(user_verification)
+admin.site.register(user_details)

@@ -7,10 +7,12 @@ from django.contrib.auth.models import (
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, name, tc, password=None, password2=None):
+    def create_user(self, email, name, tc, password=None, password2=None,city=None,pin_code=None,PAN=None,aadhaar_number=None,dob=None,
+                   address=None,mobile=None):
         """
         Creates and saves a User with the given email, name ,tc and password.
         """
+        
         if not email:
             raise ValueError('Users must have an email address')
 
@@ -108,3 +110,46 @@ class bank_details(models.Model):
     REQUIRED_FIELDS=['uid']
     def __str__(self):
         return self.account_holder
+    
+
+class cnd(models.Model):
+    cnd_name =models.CharField(max_length=200)
+    cnd_code=models.CharField(max_length=256)
+    is_active =models.IntegerField(null=True,blank=True)
+    cnd_group =models.CharField(max_length=200,null=True,blank=True)
+    deleted =models.CharField(max_length=5)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
+    cnd_parent_id =models.CharField(max_length=100,null=True,blank=True)
+    
+    def __str__(self):
+     return '%s %s' % (self.cnd_name, self.cnd_code)
+ 
+class user_verification(models.Model):
+    uid = models.IntegerField(null=True,blank=True)
+    verification_type=models.CharField(max_length=100,null=True,blank=True)
+    deleted =models.CharField(max_length=5)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
+    
+    def __str__(self):
+     return '%s %s' % (self.uid, self.verification_type)
+
+class user_details(models.Model):
+    # uid , fname,lname,dob,address,city,mobile,PAN, addhar number
+    uid = models.IntegerField(null=True,blank=True)
+    name =models.CharField(max_length=75,null=True,blank=True)
+    deleted =models.CharField(max_length=5)
+    dob    = models.CharField(max_length=75,null=True,blank=True)
+    address = models.CharField(max_length=100,null=True,blank=True)
+    city  =   models.CharField(max_length=100,null=True,blank=True)
+    mobile = models.CharField(max_length=100,null=True,blank=True)
+    pin_code=models.IntegerField(null=True,blank=True)
+    PAN    = models.CharField(max_length=100,null=True,blank=True)
+    aadhaar_number= models.CharField(max_length=20,null=True,blank=True)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
+    
+    def __str__(self):
+        return self.name
+    

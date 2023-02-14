@@ -42,3 +42,7 @@ class regex:
             return True
         else:
             return False
+        
+        
+  def verificationdoc(self):
+        pass
