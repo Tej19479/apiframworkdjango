@@ -37,8 +37,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         }
         # valdating Password and Confrim Whlie  Registration
-        global PAN  ;
-        aadhaar_number=""
+        
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
@@ -52,11 +51,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         mobile = attrs.get('mobile')
         print("password", password)
         print("password2", password2)
-        
-        if password != password2:
+        res =regex.verificationdoc(PAN,aadhaar_number)
+        print("res",res)
+        if res ==True:
+         if password != password2:
             dict = {'status': 'False'}, {
                 'Message': 'Password mismatch'}, {'status': '200'}
             raise serializers.ValidationError(dict)
+        else:
+         raise serializers.ValidationError("PAN and aadhar formt is wrong")  
         return attrs
 
     def create(self, validate_data):
