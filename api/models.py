@@ -153,3 +153,19 @@ class user_details(models.Model):
     def __str__(self):
         return self.name
     
+    
+class docstore(models.Model):
+    uid = models.IntegerField(null=True,blank=True)
+    verification_type=models.CharField(max_length=100,null=True,blank=True)
+    store_data_image=models.TextField(null=True,blank=True)
+    pimage =models.ImageField( upload_to='pimages',null=True,blank=True)
+    deleted =models.CharField(max_length=5)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
+    
+    def __str__(self):
+        return self.verification_type
+    
+
+
+    
