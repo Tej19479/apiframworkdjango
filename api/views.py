@@ -3,13 +3,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from api.models import User,inv,bank_details
-from api.serializer import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserChangePasswordVSerializer,SendPasswordRestEmailSerilizer,AddBankDetialsSerializer
-UserChangePasswordVSerializer
+from api.serializer import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserChangePasswordVSerializer,SendPasswordRestEmailSerilizer,AddBankDetialsSerializer,UserChangePasswordVSerializer,ImageSerializer
 from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.core.mail import EmailMessage,send_mail
+from rest_framework.parsers import MultiPartParser
+from account.utils import imageconvert
 
 
 def get_tokens_for_user(user):
@@ -129,3 +130,15 @@ class AddBankDetials(APIView):
              return Response({'msg':'Add Bank succefully'},status=status.HTTP_200_OK)
      return Response(serializer.errors,status=status.HTTP_404_BAD_REQUEST)
 
+
+class Imageupload(APIView):
+    parser_classes = (MultiPartParser,)
+    
+    def post(self, request, *args, **kwargs):
+        serializer = ImageSerializer(data=request.data)
+        if serializer.is_valid():
+            image = serializer.validated_data['image']
+            # Save the image to your server or process it as required
+            return Response({'status': 'success'})
+        else:
+            return Response(serializer.errors, status=400)

@@ -3,9 +3,10 @@ from api.models import User, inv, bank_details, user_verification, user_details
 from django.utils.encoding import force_bytes, force_str, DjangoUnicodeDecodeError, smart_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from account.utils import Util, regex
+from account.utils import Util, regex,imageconvert
 from django.db import connection
 from api.dbquery import getsingledata
+from io import BytesIO
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -262,3 +263,30 @@ class AddBankDetialsSerializer(serializers.ModelSerializer):
                                 "data not insert in bank details")
 
         return attrs
+    
+class ImageSerializer(serializers.Serializer):
+        image = serializers.ImageField()
+        class meta:
+            fields =['image']
+            
+        def validate(self, image):
+            image_file = image["image"]
+            #print("type of imagefile",type(image_file))
+            image_get_tex=imageconvert.image_get_tex(image_file)
+            '''it=[]
+            #it.append(image_get_tex)
+            lines = image_get_tex.split('\n')
+            for lin in lines:
+              s = lin.strip()
+              s = lin.replace('\n', '')
+              s = s.rstrip()
+              s = s.lstrip()
+              it.append(s)
+            print(it)'''
+            #res=regex.pan_read_data(image_get_tex)
+            #res1=regex.findword(res,"name")
+            #print("res",res,)
+            #res =regex.pan_read_data(it)
+
+            #print("hhhhhh",res)   
+            return image

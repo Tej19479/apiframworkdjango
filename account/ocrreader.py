@@ -11,5 +11,5 @@ def image_get_tex(image):
    return get_text
 
 
-res =image_get_tex("account/hello.jpg")
+res =image_get_tex("C:/Users/Tej Pratap/Pictures/20230216_223634.jpg")
 print(res)
