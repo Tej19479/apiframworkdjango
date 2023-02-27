@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from api.models import User,inv,bank_details
-from api.serializer import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserChangePasswordVSerializer,SendPasswordRestEmailSerilizer,AddBankDetialsSerializer,UserChangePasswordVSerializer,ImageSerializer
+from api.serializer import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserChangePasswordVSerializer,SendPasswordRestEmailSerilizer,AddBankDetialsSerializer,UserChangePasswordVSerializer,ImageSerializer,planserilizers
 from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -11,6 +11,10 @@ from rest_framework.permissions import IsAuthenticated
 from django.core.mail import EmailMessage,send_mail
 from rest_framework.parsers import MultiPartParser
 from account.utils import imageconvert
+from api.dbquery import getsingledata, getselectdata
+from account.database import selectdata
+import json
+
 
 
 def get_tokens_for_user(user):
@@ -141,4 +145,31 @@ class Imageupload(APIView):
             # Save the image to your server or process it as required
             return Response({'status': 'success'})
         else:
-            return Response(serializer.errors, status=400)
+         return Response(serializer.errors, status=400)
+     
+class planview(APIView):
+     def get(self,request,fromat=None):
+            plan=[]
+            content={}
+            serializer = planserilizers(data=request.data)
+            
+            if serializer.is_valid(raise_exception=True):
+                data = serializer.validated_data
+                try:
+                    invs = selectdata('select inv_state from api_inv where id= %s' % data['investment_id'])
+                    print("ddddddddddddddddddddddd",len(invs))
+                    if invs.inv_state[0]==10000:
+                        queryresult=selectdata('select cnd_name ,rate,min_proposal,cnd_parent_id,description from api_cnd where cnd_group="SIGP_PLAN_NAME"')
+                        queryresult = queryresult.rename(columns={'cnd_name': 'plan_name', 'rate': 'plan_rate','min_proposal':'mini_invtesment','cnd_parent_id':'plan_id',
+                                                                  'description':'plan_descripation'})
+                        data = queryresult.to_dict(orient='records')
+
+                        print(data)
+                    
+                        return Response({"msg":"user made live please check kyc is complete or not","data":data})
+                    elif len(invs)==0:
+                      return Response({"data":"Lender doe not exits"})
+                    else:
+                        return Response({"data":"User is not live Please contact support team"})
+                except:
+                    return Response({"data":"data not found"})

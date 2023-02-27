@@ -121,9 +121,12 @@ class cnd(models.Model):
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
     cnd_parent_id =models.CharField(max_length=100,null=True,blank=True)
-    
+    rate=models.DecimalField(null=True,blank=True, decimal_places=2 , max_digits=10)
+    max_proposal=models.DecimalField(null=True,blank=True, decimal_places=2 , max_digits=10)
+    min_proposal=models.DecimalField(null=True,blank=True, decimal_places=2 , max_digits=10)
+    description=models.TextField(null=True,blank=True)
     def __str__(self):
-     return '%s %s' % (self.cnd_name, self.cnd_code)
+     return self.cnd_name
  
 class user_verification(models.Model):
     uid = models.IntegerField(null=True,blank=True)
@@ -165,7 +168,6 @@ class docstore(models.Model):
     
     def __str__(self):
         return self.verification_type
-    
 
 
     
