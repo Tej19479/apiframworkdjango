@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import User, inv, bank_details, user_verification, user_details, cnd
+from api.models import User, inv, bank_details, user_verification, user_details, cnd, b2b_product_investment_utr_details
 from django.utils.encoding import force_bytes, force_str, DjangoUnicodeDecodeError, smart_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -8,6 +8,7 @@ from account.database import selectdata
 from django.db import connection
 from api.dbquery import getsingledata, getselectdata
 from io import BytesIO
+
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -298,24 +299,67 @@ class ImageSerializer(serializers.Serializer):
 
 
 class planserilizers(serializers.Serializer):
-    investment_id = serializers.IntegerField( style={
-        'input_type': 'uid'
-    }, write_only=True)
-
 
     def validate(self, attrs):
-        investment_id=attrs.get('investment_id')
-         #validate investment_id
-         
+        investment_id = self.context.get('inv_id')
+        # validate investment_id
+        print("fhhhhfhf", investment_id)
         if not investment_id:
-             raise serializers.ValidationError("Investment_id requeried")
-        
-        if investment_id<0:
-          raise serializers.ValidationError("Investment_id can't be negivtive")
+            raise serializers.ValidationError("Investment_id requeried")
 
-            
-        
+        if investment_id < 0:
+            print("fffffffffffffffffffffffffffffff")
+            raise serializers.ValidationError(
+                "Investment_id can't be negivtive")
+
         return attrs
-       
-              
-                
+
+
+class Transcatin_intiatie_serializers(serializers.Serializer):
+
+            inv_id = serializers.IntegerField(style={
+                'input_type': 'inv_id'
+            }, write_only=True)
+            amount = serializers.IntegerField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            plan_id = serializers.IntegerField(style={
+                'input_type': 'inv_id'
+            }, write_only=True)
+            amount = serializers.IntegerField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            bank_ref_id = serializers.CharField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            pt_ref_id = serializers.CharField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            txn_date = serializers.DateField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            pg_type = serializers.CharField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            payment_mode = serializers.CharField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+
+            def validate(self, attrs):
+                  inv_id = attrs.get('inv_id')
+                  amount=attrs.get('amount')
+                  plan_id=attrs.get('plan_id')                 
+                  bank_ref_id =attrs.get('bank_ref_id')
+                  pt_ref_id =attrs.get('pt_ref_id')
+                  txn_date =attrs.get('txn_date')
+                  pg_type =attrs.get('pg_type')
+                  payment_mode =attrs.get('payment_mode')
+                  
+                  if  not   (inv_id,amount,plan_id,) :
+                    print(inv_id)
+                    raise serializers.ValidationError("Investment_id requeried")
+
+                  if inv_id<0:
+                      raise serializers.ValidationError("Investment_id can't be negivtive")
+
+                  return attrs
