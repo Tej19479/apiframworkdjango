@@ -87,6 +87,7 @@ class User(AbstractBaseUser):
 
 
 class inv(models.Model):
+    id=models.BigIntegerField(primary_key=True)
     inv_state=models.IntegerField(null=True,blank=True)
     deleted =models.CharField(max_length=5)
     created_at = models.DateField(auto_now_add=True)
@@ -121,9 +122,12 @@ class cnd(models.Model):
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
     cnd_parent_id =models.CharField(max_length=100,null=True,blank=True)
-    
+    rate=models.DecimalField(null=True,blank=True, decimal_places=2 , max_digits=10)
+    max_proposal=models.DecimalField(null=True,blank=True, decimal_places=2 , max_digits=10)
+    min_proposal=models.DecimalField(null=True,blank=True, decimal_places=2 , max_digits=10)
+    description=models.TextField(null=True,blank=True)
     def __str__(self):
-     return '%s %s' % (self.cnd_name, self.cnd_code)
+     return self.cnd_name
  
 class user_verification(models.Model):
     uid = models.IntegerField(null=True,blank=True)
@@ -152,4 +156,56 @@ class user_details(models.Model):
     
     def __str__(self):
         return self.name
+    
+    
+class docstore(models.Model):
+    uid = models.IntegerField(null=True,blank=True)
+    verification_type=models.CharField(max_length=100,null=True,blank=True)
+    store_data_image=models.TextField(null=True,blank=True)
+    pimage =models.ImageField( upload_to='pimages',null=True,blank=True)
+    deleted =models.CharField(max_length=5)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
+    
+    def __str__(self):
+        return self.verification_type
+    
+class b2b_product_investment_utr_details(models.Model):
+      uid = models.IntegerField(null=True,blank=True)
+      investment_id=models.BigIntegerField(null=True,blank=True)
+      plan_id=models.BigIntegerField(null=True,blank=True)
+      pool_id=models.BigIntegerField(null=True,blank=True)
+      amount=models.DecimalField(null=True,blank=True, decimal_places=2 , max_digits=10)
+      schema_id=models.CharField(max_length=256,null=True,blank=True)
+      utr_no=models.CharField(max_length=256,null=True,blank=True)
+      txn_id=models.BigIntegerField(null=True,blank=True)
+      reconcile=models.CharField(max_length=2,null=True,blank=True)
+      escrow_status=models.CharField(max_length=2,null=True,blank=True)
+      deleted=models.CharField(max_length=2,null=True,blank=True)
+      created=models.DateField(auto_now_add=True)
+      created_by=models.IntegerField(null=True,blank=True)
+      source=models.CharField(max_length=225,null=True,blank=True)
+      callback_url=models.CharField(max_length=225,null=True,blank=True)
+      updated=models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
+      updated_by=models.IntegerField(null=True,blank=True)
+      txn_status=models.IntegerField(null=True,blank=True)
+      txn_date=models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
+      bank_ref_id=models.CharField(max_length=225,null=True,blank=True)
+      utr_post_date=models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
+      utr_share_date=models.DateField(auto_now_add=True)
+      is_funding_started=models.CharField(max_length=2,null=True,blank=True)
+      pg_type=models.CharField(max_length=50,null=True,blank=True)
+      payment_mode=models.CharField(max_length=50,null=True,blank=True)
+      recharge_ref_id=models.IntegerField(null=True,blank=True)
+      pool_loan_id=models.BigIntegerField(null=True,blank=True)
+      proposal_id=models.IntegerField(null=True,blank=True)
+      actual_utr_amount_credit_date=models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
+      
+      def __str__(self):
+            return self.schema_id
+      
+      
+      
+      
+
     

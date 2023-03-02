@@ -1,11 +1,14 @@
 from rest_framework import serializers
-from api.models import User, inv, bank_details, user_verification, user_details
+from api.models import User, inv, bank_details, user_verification, user_details, cnd, b2b_product_investment_utr_details
 from django.utils.encoding import force_bytes, force_str, DjangoUnicodeDecodeError, smart_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from account.utils import Util, regex
+from account.utils import Util, regex, imageconvert
+from account.database import selectdata
 from django.db import connection
-from api.dbquery import getsingledata
+from api.dbquery import getsingledata, getselectdata
+from io import BytesIO
+
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -37,8 +40,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         }
         # valdating Password and Confrim Whlie  Registration
-        global PAN  ;
-        aadhaar_number=""
+
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
@@ -52,11 +54,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         mobile = attrs.get('mobile')
         print("password", password)
         print("password2", password2)
-        
-        if password != password2:
-            dict = {'status': 'False'}, {
-                'Message': 'Password mismatch'}, {'status': '200'}
-            raise serializers.ValidationError(dict)
+        res = regex.verificationdoc(PAN, aadhaar_number)
+        print("res", res)
+        if res == True:
+            if password != password2:
+                dict = {'status': 'False'}, {
+                    'Message': 'Password mismatch'}, {'status': '200'}
+                raise serializers.ValidationError(dict)
+        else:
+            raise serializers.ValidationError("PAN and aadhar formt is wrong")
         return attrs
 
     def create(self, validate_data):
@@ -67,18 +73,20 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validate_data)
         user_id_insert = "select id from api_User where email= '%s'" % validate_data['email']
         result = getsingledata(user_id_insert)
-        #print("user_id_insert id", len(int(result)))
+        # print("user_id_insert id", len(int(result)))
         if result > 0:
             user_details_verification = user_details(
                 uid=result, name=validate_data['name'], deleted="N", dob=validate_data['dob'], address=validate_data['address'], city=validate_data['city'],
                 mobile=validate_data['mobile'], PAN=validate_data['PAN'], aadhaar_number=validate_data['aadhaar_number'], pin_code=validate_data['pin_code'])
             user_details_verification.save()
-            verification_type="PAN"
+            verification_type = "PAN"
             if validate_data['PAN'] or validate_data['aadhaar_number']:
-             kyc = user_verification(uid=result,deleted="N",verification_type="PAN")
-             kyc1 = user_verification(uid=result,deleted="N",verification_type="Kyc_Document")
-             kyc.save()
-             kyc1.save()
+                kyc = user_verification(
+                    uid=result, deleted="N", verification_type="PAN")
+                kyc1 = user_verification(
+                    uid=result, deleted="N", verification_type="Kyc_Document")
+                kyc.save()
+                kyc1.save()
         else:
             raise serializers.ValidationError("Data not insert")
         return user
@@ -259,3 +267,99 @@ class AddBankDetialsSerializer(serializers.ModelSerializer):
                                 "data not insert in bank details")
 
         return attrs
+
+
+class ImageSerializer(serializers.Serializer):
+    image = serializers.ImageField()
+
+    class meta:
+        fields = ['image']
+
+    def validate(self, image):
+        image_file = image["image"]
+        # print("type of imagefile",type(image_file))
+        image_get_tex = imageconvert.image_get_tex(image_file)
+        '''it=[]
+            #it.append(image_get_tex)
+            lines = image_get_tex.split('\n')
+            for lin in lines:
+              s = lin.strip()
+              s = lin.replace('\n', '')
+              s = s.rstrip()
+              s = s.lstrip()
+              it.append(s)
+            print(it)'''
+        # res=regex.pan_read_data(image_get_tex)
+        # res1=regex.findword(res,"name")
+        # print("res",res,)
+        # res =regex.pan_read_data(it)
+
+        # print("hhhhhh",res)
+        return image
+
+
+class planserilizers(serializers.Serializer):
+
+    def validate(self, attrs):
+        investment_id = self.context.get('inv_id')
+        # validate investment_id
+        print("fhhhhfhf", investment_id)
+        if not investment_id:
+            raise serializers.ValidationError("Investment_id requeried")
+
+        if investment_id < 0:
+            print("fffffffffffffffffffffffffffffff")
+            raise serializers.ValidationError(
+                "Investment_id can't be negivtive")
+
+        return attrs
+
+
+class Transcatin_intiatie_serializers(serializers.Serializer):
+
+            inv_id = serializers.IntegerField(style={
+                'input_type': 'inv_id'
+            }, write_only=True)
+            amount = serializers.IntegerField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            plan_id = serializers.IntegerField(style={
+                'input_type': 'inv_id'
+            }, write_only=True)
+            amount = serializers.IntegerField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            bank_ref_id = serializers.CharField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            pt_ref_id = serializers.CharField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            txn_date = serializers.DateField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            pg_type = serializers.CharField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+            payment_mode = serializers.CharField(style={
+                'input_type': 'amount'
+            }, write_only=True)
+
+            def validate(self, attrs):
+                  inv_id = attrs.get('inv_id')
+                  amount=attrs.get('amount')
+                  plan_id=attrs.get('plan_id')                 
+                  bank_ref_id =attrs.get('bank_ref_id')
+                  pt_ref_id =attrs.get('pt_ref_id')
+                  txn_date =attrs.get('txn_date')
+                  pg_type =attrs.get('pg_type')
+                  payment_mode =attrs.get('payment_mode')
+                  
+                  if  not   (inv_id,amount,plan_id,) :
+                    print(inv_id)
+                    raise serializers.ValidationError("Investment_id requeried")
+
+                  if inv_id<0:
+                      raise serializers.ValidationError("Investment_id can't be negivtive")
+
+                  return attrs

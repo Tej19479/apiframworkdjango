@@ -1,15 +1,21 @@
 from django.shortcuts import render
 from rest_framework.response import Response 
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework import status
 from api.models import User,inv,bank_details
-from api.serializer import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserChangePasswordVSerializer,SendPasswordRestEmailSerilizer,AddBankDetialsSerializer
-UserChangePasswordVSerializer
+from api.serializer import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserChangePasswordVSerializer,SendPasswordRestEmailSerilizer,AddBankDetialsSerializer,UserChangePasswordVSerializer,ImageSerializer,planserilizers,Transcatin_intiatie_serializers
 from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.core.mail import EmailMessage,send_mail
+from rest_framework.parsers import MultiPartParser
+from account.utils import imageconvert
+from api.dbquery import getsingledata, getselectdata
+from account.database import selectdata
+import json
+
 
 
 def get_tokens_for_user(user):
@@ -129,3 +135,61 @@ class AddBankDetials(APIView):
              return Response({'msg':'Add Bank succefully'},status=status.HTTP_200_OK)
      return Response(serializer.errors,status=status.HTTP_404_BAD_REQUEST)
 
+
+class Imageupload(APIView):
+    parser_classes = (MultiPartParser,)
+    
+    def post(self, request, *args, **kwargs):
+        serializer = ImageSerializer(data=request.data)
+        if serializer.is_valid():
+            image = serializer.validated_data['image']
+            # Save the image to your server or process it as required
+            return Response({'status': 'success'})
+        else:
+         return Response(serializer.errors, status=400)
+     
+class planview(generics.ListCreateAPIView):
+     def get(self,request, inv_id):
+            
+            plan=[]
+            content={}
+            serializer = planserilizers(data=request.data,context={'inv_id':inv_id})
+            
+            if serializer.is_valid(raise_exception=True):
+                data =serializer.context.get('inv_id')
+                print("daatatta",data)
+                try:
+                    invs = selectdata('select inv_state from api_inv where id= %s' % data)
+                    print("ddddddddddddddddddddddd",len(invs))
+                    if invs.inv_state[0]==10000:
+                        queryresult=selectdata('select cnd_name ,rate,min_proposal,cnd_parent_id,description from api_cnd where cnd_group="SIGP_PLAN_NAME"')
+                        print("****************************",queryresult)
+                        queryresult = queryresult.rename(columns={'cnd_name': 'plan_name', 'rate': 'plan_rate','min_proposal':'mini_invtesment','cnd_parent_id':'plan_id',
+                                                                  'description':'plan_descripation'})
+                        data = queryresult.to_dict(orient='records')
+
+                        print(data)
+                    
+                        return Response({"msg":"user made live please check kyc is complete or not","data":data,"status":True})
+                    elif len(invs)==0:
+                      return Response({"data":"Lender doe not exits","status":False})
+                    else:
+                        return Response({"data":"User is not live Please contact support team","status":False})
+                except:
+            
+            
+                 return Response({"data":"data not found","status":False})
+             
+            else:
+                return Response(serializer.errors, status=400)
+
+
+
+class Transcatin_intiatie(APIView):
+    def post(self ,request, format=None):
+             serializer = Transcatin_intiatie_serializers(data=request.data)
+             if serializer.is_valid(raise_exception=True):
+              data=serializer.validated_data
+              return Response({"data":data})
+             else:
+              return Response(serializer.errors, status=400)
