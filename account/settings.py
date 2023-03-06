@@ -98,7 +98,9 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = "api.user"
-
+MIGRATION_SERIALIZERS = {
+    'my_custom_serializer': 'api.serializers.my_custom_serializer',
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

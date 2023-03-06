@@ -17,4 +17,12 @@ def getsingledata(self):
         row = cursor.fetchone()
         print("return one data query",row[0]) 
         return row[0]
-     
+
+
+def insertQuery(table, fields, data): 
+   query= f"INSERT INTO {table} {fields} VALUES {data}"
+   print("insert query",query)
+   cursor = dbconnection["sql"].cursor()
+   cursor.execute(query)
+   dbconnection["sql"].commit()
+   return query
