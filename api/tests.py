@@ -1,14 +1,16 @@
-from django.test import TestCase
-
-# Create your tests here.
-plans= [
-            "Freedom",
-            "3 Months",
-            "6 Months",4
-            "12 Months",
-            "24 Months",
-            "36 Months"
-        ]
 
 
-print(plans[0])
+
+givendata = [ ]
+required_data =  [('Kyc_Document',), ('Account_details',), ('PAN',)]
+b = []
+for data in required_data:
+  a = True
+  for x in givendata:
+    if x[0].upper() == data[0].upper():
+        a = False
+        break
+  if a :
+      b.append(data[0])
+
+print(b)

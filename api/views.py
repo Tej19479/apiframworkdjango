@@ -13,10 +13,10 @@ from django.core.mail import EmailMessage,send_mail
 from rest_framework.parsers import MultiPartParser
 from account.utils import imageconvert
 from api.dbquery import getsingledata, getselectdata
-from account.database import selectdata
+from account.database import selectdata,insertQuery
 import json
-
-
+import datetime
+from api.getverifcation import verification
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -190,6 +190,34 @@ class Transcatin_intiatie(APIView):
              serializer = Transcatin_intiatie_serializers(data=request.data)
              if serializer.is_valid(raise_exception=True):
               data=serializer.validated_data
-              return Response({"data":data})
+              bank_ref_id =data["bank_ref_id"]
+              plan_id=data["plan_id"]
+              amount=data["amount"]
+              investment_id=data["inv_id"]
+              pt_ref_id=data["pt_ref_id"]
+              txn_date=str(data["txn_date"])
+              pg_type=data['pg_type']
+              payment_mode=data['payment_mode']
+              '''pg_type_str=f"'{pg_type}'"
+              bank_ref_id_str=f"'{bank_ref_id}'"
+              payment_mode_str=f"'{payment_mode}'"
+              '''
+              created=datetime.datetime.now()
+              print("created",created)
+              res=verification.getverication(investment_id)
+              #print("response of kyc function return",len(res['pending_document']))
+              if res['status']==True and len(res['pending_document'])==0:
+                vaule=(bank_ref_id,pg_type,payment_mode,pt_ref_id,investment_id,amount,plan_id,txn_date,created.strftime('%Y-%m-%d %H:%M:%S'))
+                field="(bank_ref_id, pg_type, payment_mode,pt_ref_id,investment_id,amount,plan_id,txn_date,created)"
+                tables="api_b2b_product_investment_utr_detail"
+                insertQuery(tables ,field,vaule)
+                return Response({"data":res})
+              elif res['status']==True and len(res['pending_document'])>0:
+                   return Response({"data":res})
+              else: 
+                   return Response({"data":res})
+ 
+             
+
              else:
               return Response(serializer.errors, status=400)
