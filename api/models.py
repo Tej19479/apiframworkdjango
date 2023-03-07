@@ -218,15 +218,15 @@ class b2b_product_investment_utr_detail(models.Model):
       utr_no=models.CharField(max_length=256,null=True,blank=True)
       txn_id=models.BigIntegerField(null=True,blank=True)
       reconcile=models.CharField(max_length=3,default="N",null=True)
-      escrow_status=models.CharField(max_length=2,null=True,blank=True)
+      escrow_status=models.CharField(max_length=2,default="N",null=True)
       deleted=models.CharField(max_length=2,default="N",null=True)
-      created = models.DateTimeField(default=timezone.now)      
+      created = models.DateTimeField(default=timezone.now,null=True)      
       created_by=models.IntegerField(null=True,blank=True)
       source=models.CharField(max_length=225,null=True,blank=True)
       callback_url=models.CharField(max_length=225,null=True,blank=True)
       updated=models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True,default=0)
-      updated_by=models.IntegerField(null=True,blank=True)
-      txn_status=models.IntegerField(null=True,blank=True)
+      updated_by=models.IntegerField(default=0 , null=True)
+      txn_status=models.IntegerField(default=0 , null=True)
       txn_date=models.DateTimeField(default=timezone.now,null=True,blank=True)
       bank_ref_id=models.CharField(max_length=225,null=True,blank=True)
       utr_post_date=models.DateTimeField(auto_now=False, auto_now_add=False,null=True,blank=True)
@@ -236,12 +236,12 @@ class b2b_product_investment_utr_detail(models.Model):
       payment_mode=models.CharField(max_length=50,null=True,blank=True)
       recharge_ref_id=models.IntegerField(null=True,blank=True)
       pool_loan_id=models.BigIntegerField(null=True,blank=True)
-      proposal_id=models.IntegerField(null=True,blank=True)
+      proposal_id=models.IntegerField(default=0,null=True)
       actual_utr_amount_credit_date=models.DateTimeField(auto_now=False, auto_now_add=False,null=True)
-      pt_ref_id=models.CharField(max_length=50,null=True,blank=True)
+      pt_ref_id=models.CharField(max_length=50,default="0",null=True)
       
       def __str__(self):
-            return self.schema_id
+            return self.id
       
       
       

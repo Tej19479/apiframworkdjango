@@ -25,4 +25,5 @@ def insertQuery(table, fields, data):
    cursor = dbconnection["sql"].cursor()
    cursor.execute(query)
    dbconnection["sql"].commit()
-   return query
+   res1=cursor.lastrowid
+   return res1

@@ -202,16 +202,19 @@ class Transcatin_intiatie(APIView):
               bank_ref_id_str=f"'{bank_ref_id}'"
               payment_mode_str=f"'{payment_mode}'"
               '''
+              txn_status=500
+              pool_id=43
+              pool_loan_id=1003810388
               created=datetime.datetime.now()
-              print("created",created)
               res=verification.getverication(investment_id)
               #print("response of kyc function return",len(res['pending_document']))
               if res['status']==True and len(res['pending_document'])==0:
-                vaule=(bank_ref_id,pg_type,payment_mode,pt_ref_id,investment_id,amount,plan_id,txn_date,created.strftime('%Y-%m-%d %H:%M:%S'))
-                field="(bank_ref_id, pg_type, payment_mode,pt_ref_id,investment_id,amount,plan_id,txn_date,created)"
+                vaule=(bank_ref_id,pg_type,payment_mode,pt_ref_id,investment_id,amount,plan_id,txn_date,created.strftime('%Y-%m-%d %H:%M:%S'),txn_status,pool_id,pool_loan_id)
+                field="(bank_ref_id, pg_type, payment_mode,txn_id,investment_id,amount,plan_id,txn_date,created,txn_status,pool_id,pool_loan_id)"
                 tables="api_b2b_product_investment_utr_detail"
-                insertQuery(tables ,field,vaule)
-                return Response({"data":res})
+                insert_id=insertQuery(tables ,field,vaule)
+                data={"message":"Transaction Executed Successfully","success":True,"result":{"fc_txn_id":insert_id,"txn_status":"INITIATED","amount":amount}}
+                return Response(data)
               elif res['status']==True and len(res['pending_document'])>0:
                    return Response({"data":res})
               else: 
