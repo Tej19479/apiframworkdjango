@@ -27,3 +27,14 @@ def insertQuery(table, fields, data):
    dbconnection["sql"].commit()
    res1=cursor.lastrowid
    return res1
+
+def getGenralQueryData(query):
+    try:
+      cursor = dbconnection["sql"].cursor()
+      cursor.execute(query)
+      rows =cursor.fetchall()
+      a=[]
+      cursor.close()
+      return rows
+    except:
+       return False
